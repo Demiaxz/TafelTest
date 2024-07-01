@@ -44,9 +44,26 @@
       <select id="gameMode" class="input-field" onchange="toggleTimeLimit()">
         <option value="timed">Timed</option>
         <option value="endless">Endless</option>
+        <option value="marathon">Marathon</option>
+        <option value="sprint">Sprint</option>
       </select>
     </label><br>
     <label id="timeLimitLabel" class="hidden">Time Limit (minutes): <input type="number" id="timeLimit" value="5" class="input-field"></label><br>
+    <label>Exercise Type:
+      <select id="exerciseType" class="input-field">
+        <option value="multiplication">Multiplication</option>
+        <option value="addition">Addition</option>
+        <option value="subtraction">Subtraction</option>
+        <option value="division">Division</option>
+      </select>
+    </label><br>
+    <label>Difficulty Level:
+      <select id="difficultyLevel" class="input-field">
+        <option value="easy">Easy</option>
+        <option value="medium">Medium</option>
+        <option value="hard">Hard</option>
+      </select>
+    </label><br>
     <button class="btn" onclick="startGame()">Start Game</button>
   </div>
 
@@ -66,7 +83,11 @@
   <div id="reportScreen" class="container screen hidden">
     <h1>Game Over!</h1>
     <div id="summary"></div>
+    <hr>
     <div id="detailedReport"></div>
+    <hr>
+    <div id="badges"></div>
+    <div id="previousResults"></div>
     <button class="btn" onclick="restartGame()">Play Again</button>
   </div>
 
