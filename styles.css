@@ -1,0 +1,135 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+body {
+  font-family: 'Roboto', sans-serif;
+  background-color: #fafafa;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
+
+.container {
+  background-color: #fff;
+  padding: 40px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  max-width: 800px;
+  width: 100%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.hidden {
+  display: none;
+}
+
+.screen {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.screen.active {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+h1 {
+  font-size: 28px;
+  margin-bottom: 20px;
+  font-weight: 700;
+  color: #333;
+}
+
+h2 {
+  font-size: 24px;
+  margin-bottom: 15px;
+  font-weight: 700;
+  color: #333;
+}
+
+p {
+  font-size: 18px;
+  margin-bottom: 10px;
+  color: #555;
+}
+
+.input-field {
+  margin-top: 10px;
+  padding: 12px 20px;
+  font-size: 16px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: #3f51b5;
+}
+
+.checkbox-group {
+  text-align: left;
+}
+
+.checkbox-group label {
+  display: block;
+  margin: 5px 0;
+}
+
+.btn {
+  background-color: #3f51b5;
+  color: white;
+  border: none;
+  cursor: pointer;
+  margin-top: 20px;
+  padding: 12px 20px;
+  font-size: 16px;
+  border-radius: 4px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.btn:hover {
+  background-color: #303f9f;
+}
+
+#score, #timer {
+  margin-top: 20px;
+  font-size: 18px;
+  color: #666;
+}
+
+#question {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+#feedback {
+  font-size: 18px;
+  margin-top: 10px;
+  color: #d32f2f;
+}
+
+#detailedReport table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+#detailedReport th, #detailedReport td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+#detailedReport th {
+  background-color: #f2f2f2;
+  text-align: left;
+}
