@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Math Practice Game</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Welkom scherm -->
+  <div id="welcomeScreen" class="container screen active">
+    <h1>Welcome to the Math Practice Game</h1>
+    <p>Please enter your name:</p>
+    <input type="text" id="usernameInput" class="input-field">
+    <button class="btn" onclick="nextScreen('welcomeScreen', 'selectTablesScreen')">Start</button>
+  </div>
+
+  <!-- Selectie van tafels scherm -->
+  <div id="selectTablesScreen" class="container screen hidden">
+    <h1>Select Tables to Practice</h1>
+    <p>Select one or more tables:</p>
+    <div class="checkbox-group">
+      <label><input type="checkbox" value="1"> Tafel van 1</label>
+      <label><input type="checkbox" value="2"> Tafel van 2</label>
+      <label><input type="checkbox" value="3"> Tafel van 3</label>
+      <label><input type="checkbox" value="4"> Tafel van 4</label>
+      <label><input type="checkbox" value="5"> Tafel van 5</label>
+      <label><input type="checkbox" value="6"> Tafel van 6</label>
+      <label><input type="checkbox" value="7"> Tafel van 7</label>
+      <label><input type="checkbox" value="8"> Tafel van 8</label>
+      <label><input type="checkbox" value="9"> Tafel van 9</label>
+      <label><input type="checkbox" value="10"> Tafel van 10</label>
+    </div>
+    <button class="btn" onclick="nextScreen('selectTablesScreen', 'settingsScreen')">Next</button>
+  </div>
+
+  <!-- Instellingen scherm -->
+  <div id="settingsScreen" class="container screen hidden">
+    <h1>Game Settings</h1>
+    <p>Specify game settings:</p>
+    <label>Number of Questions: <input type="number" id="numberOfQuestions" value="10" class="input-field"></label><br>
+    <label>Game Mode:
+      <select id="gameMode" class="input-field" onchange="toggleTimeLimit()">
+        <option value="timed">Timed</option>
+        <option value="endless">Endless</option>
+      </select>
+    </label><br>
+    <label id="timeLimitLabel" class="hidden">Time Limit (minutes): <input type="number" id="timeLimit" value="5" class="input-field"></label><br>
+    <button class="btn" onclick="startGame()">Start Game</button>
+  </div>
+
+  <!-- Spelscherm -->
+  <div id="gameScreen" class="container screen hidden">
+    <h1>Math Practice Game</h1>
+    <div id="question" class="question"></div>
+    <input type="text" id="answerInput" class="input-field" onkeydown="checkInput(event)">
+    <p id="progress" class="progress"></p>
+    <p id="feedback" class="feedback"></p>
+    <p id="score" class="score">Score: 0</p>
+    <p id="timer" class="timer">Time Left: 5:00</p>
+    <button class="btn" onclick="endGame()">End Game</button>
+  </div>
+
+  <!-- Rapportage scherm -->
+  <div id="reportScreen" class="container screen hidden">
+    <h1>Game Over!</h1>
+    <div id="summary"></div>
+    <div id="detailedReport"></div>
+    <button class="btn" onclick="restartGame()">Play Again</button>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>
