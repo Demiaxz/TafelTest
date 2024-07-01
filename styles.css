@@ -133,3 +133,36 @@ p {
   background-color: #f2f2f2;
   text-align: left;
 }
+
+#badges, #previousResults {
+  margin-top: 20px;
+}
+
+#badges h2, #previousResults h2 {
+  font-size: 24px;
+  margin-bottom: 15px;
+  font-weight: 700;
+  color: #333;
+}
+
+#badges p, #previousResults p {
+  font-size: 18px;
+  margin-bottom: 10px;
+  color: #555;
+}
+
+#previousResults table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+#previousResults th, #previousResults td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+#previousResults th {
+  background-color: #f2f2f2;
+  text-align: left;
+}
