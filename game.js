@@ -13,8 +13,11 @@ var timerInterval;
 var answers = [];
 var badges = [];
 var questionStartTime; // Variabele om de starttijd van elke vraag op te slaan
+var endOnFault = false; // Variabele om bij te houden of het spel eindigt bij een fout
+var numberRange;
+var timerPaused = false; // Variabele om bij te houden of de timer gepauzeerd is
 
-// Functie om naar het volgende scherm te gaan
+// Functie om naar het volgende scherm te gaan en de inhoud naar beneden te scrollen
 function nextScreen(currentScreenId, nextScreenId) {
   document.getElementById(currentScreenId).classList.remove('active');
   document.getElementById(currentScreenId).classList.add('hidden');
@@ -26,6 +29,11 @@ function nextScreen(currentScreenId, nextScreenId) {
   setTimeout(function() {
     document.getElementById(nextScreenId).style.opacity = 1;
   }, 100);
+
+  // Scroll de inhoud naar beneden zodra het scherm wordt weergegeven
+  setTimeout(function() {
+    document.getElementById(nextScreenId).scrollIntoView({ behavior: 'smooth' });
+  }, 100); // Delay to ensure the screen transition is complete
 }
 
 // Toggle time limit input field visibility
@@ -39,6 +47,21 @@ function toggleTimeLimit() {
   }
 }
 
+// Toggle exercise settings visibility
+function toggleExerciseSettings() {
+  var exerciseType = document.getElementById('exerciseType').value;
+  var tableSelection = document.getElementById('tableSelection');
+  var decimalRangeSelection = document.getElementById('decimalRangeSelection');
+  
+  if (exerciseType === 'tables') {
+    tableSelection.classList.remove('hidden');
+    decimalRangeSelection.classList.add('hidden');
+  } else {
+    tableSelection.classList.add('hidden');
+    decimalRangeSelection.classList.remove('hidden');
+  }
+}
+
 // Start het spel na het invoeren van de naam
 function startGame() {
   username = document.getElementById('usernameInput').value.trim();
@@ -47,8 +70,8 @@ function startGame() {
     return;
   }
 
-  var checkboxes = document.querySelectorAll('#selectTablesScreen input[type="checkbox"]:checked');
-  if (checkboxes.length === 0) {
+  var checkboxes = document.querySelectorAll('#tableSelection input[type="checkbox"]:checked');
+  if (exerciseType === 'tables' && checkboxes.length === 0) {
     alert('Please select at least one table to practice.');
     return;
   }
@@ -59,6 +82,8 @@ function startGame() {
   gameMode = document.getElementById('gameMode').value;
   exerciseType = document.getElementById('exerciseType').value;
   difficultyLevel = document.getElementById('difficultyLevel').value;
+  endOnFault = document.getElementById('endOnFault').checked;
+  numberRange = document.getElementById('numberRange') ? document.getElementById('numberRange').value : null;
 
   if (gameMode === 'timed' || gameMode === 'marathon') {
     timeLimit = parseInt(document.getElementById('timeLimit').value) * 60; // in seconds
@@ -80,12 +105,16 @@ function startGame() {
 // Genereer vragen op basis van geselecteerde tafels en moeilijkheidsgraad
 function generateQuestions() {
   questions = [];
+  var easyQuestions = [];
+  var mediumQuestions = [];
+  var hardQuestions = [];
+
   for (var i = 0; i < numberOfQuestions; i++) {
     var table = selectedTables[Math.floor(Math.random() * selectedTables.length)];
     var question;
     switch (exerciseType) {
       case 'multiplication':
-        question = generateMultiplicationQuestion(table);
+        question = generateMultiplicationQuestion();
         break;
       case 'addition':
         question = generateAdditionQuestion();
@@ -96,14 +125,31 @@ function generateQuestions() {
       case 'division':
         question = generateDivisionQuestion();
         break;
+      case 'tables':
+        question = generateMultiplicationQuestion(table);
+        break;
     }
-    questions.push(question);
+    if (difficultyLevel === 'progressive') {
+      if (i < numberOfQuestions / 3) {
+        easyQuestions.push(question);
+      } else if (i < (2 * numberOfQuestions) / 3) {
+        mediumQuestions.push(question);
+      } else {
+        hardQuestions.push(question);
+      }
+    } else {
+      questions.push(question);
+    }
+  }
+
+  if (difficultyLevel === 'progressive') {
+    questions = easyQuestions.concat(mediumQuestions, hardQuestions);
   }
 }
 
-// Genereer vermenigvuldigingsvragen voor een specifieke tafel
+// Genereer vermenigvuldigingsvragen voor een specifieke tafel of bereik
 function generateMultiplicationQuestion(table) {
-  var num1 = table;
+  var num1 = table ? table : getRandomNumber();
   var num2 = Math.floor(Math.random() * 10) + 1;
   return {
     num1: num1,
@@ -145,16 +191,32 @@ function generateDivisionQuestion() {
   };
 }
 
-// Bepaal de moeilijkheidsgraad en geef een willekeurig nummer
+// Bepaal de moeilijkheidsgraad en geef een willekeurig nummer binnen het geselecteerde bereik
 function getRandomNumber() {
-  switch (difficultyLevel) {
-    case 'easy':
-      return Math.floor(Math.random() * 10) + 1;
-    case 'medium':
-      return Math.floor(Math.random() * 50) + 1;
-    case 'hard':
-      return Math.floor(Math.random() * 100) + 1;
+  var range = numberRange ? numberRange.split('-').map(Number) : [1, 10];
+  var min = range[0];
+  var max = range[1];
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+// Functie om de operator op te halen op basis van de oefening
+function getOperator() {
+  switch (exerciseType) {
+    case 'multiplication':
+      return '×';
+    case 'tables': // Voeg 'tables' toe aan de gevallen die vermenigvuldiging gebruiken
+      return '×';
+    case 'addition':
+      return '+';
+    case 'subtraction':
+      return '-';
+    case 'division':
+      return '÷';
   }
+}
+
+function updateScore() {
+  document.getElementById('score').textContent = `Score: ${score}`;
 }
 
 // Laad huidige vraag
@@ -167,16 +229,18 @@ function loadQuestion() {
   questionStartTime = Date.now(); // Stel de starttijd van de huidige vraag in
 }
 
-// Controleer invoer van gebruiker
 function checkInput(event) {
   var userAnswer = document.getElementById('answerInput').value.trim();
   if (event.key === 'Escape') {
     endGame();
     return;
   }
+  if (event.key === 'Backspace') {
+    return; // Voorkom dat antwoorden worden gecontroleerd bij backspace
+  }
   if (userAnswer.length === String(questions[currentQuestionIndex].answer).length) {
     var correctAnswer = questions[currentQuestionIndex].answer;
-    var completionTime = Date.now() - questionStartTime; // Bereken de tijd die nodig was om de vraag te beantwoorden
+    var completionTime = Date.now() - questionStartTime;
     answers.push({
       question: `${questions[currentQuestionIndex].num1} ${getOperator()} ${questions[currentQuestionIndex].num2}`,
       correctAnswer: correctAnswer,
@@ -188,42 +252,57 @@ function checkInput(event) {
       score++;
       updateScore();
       document.getElementById('feedback').textContent = 'Correct!';
+      document.getElementById('feedback').classList.add('correct');
+      setTimeout(() => {
+        document.getElementById('feedback').classList.remove('correct');
+        resumeTimer(); // Hervat de timer na het tonen van de feedback
+        if (currentQuestionIndex < numberOfQuestions) {
+          loadQuestion();
+        } else {
+          endGame();
+        }
+      }, 500);
     } else {
-      document.getElementById('feedback').textContent = 'Incorrect. Please try again.';
+      document.getElementById('feedback').textContent = `Incorrect. The correct answer is ${correctAnswer}.`;
+      document.getElementById('feedback').classList.add('incorrect');
+      setTimeout(() => {
+        document.getElementById('feedback').classList.remove('incorrect');
+        resumeTimer(); // Hervat de timer na het tonen van de feedback
+        if (endOnFault) {
+          endGame();
+          return;
+        }
+        if (currentQuestionIndex < numberOfQuestions) {
+          loadQuestion();
+        } else {
+          endGame();
+        }
+      }, 2000); // Verleng de tijd om het correcte antwoord langer zichtbaar te maken
     }
     currentQuestionIndex++;
-    if (currentQuestionIndex < numberOfQuestions) {
-      loadQuestion();
-    } else {
-      endGame();
-    }
+    pauseTimer(); // Pauzeer de timer tijdens het tonen van de feedback
   }
 }
 
-// Haal de operator op basis van de oefening
-function getOperator() {
-  switch (exerciseType) {
-    case 'multiplication':
-      return '×';
-    case 'addition':
-      return '+';
-    case 'subtraction':
-      return '-';
-    case 'division':
-      return '÷';
+function pauseTimer() {
+  if (!timerPaused) {
+    clearInterval(timerInterval);
+    timerPaused = true;
   }
 }
 
-// Update score op scherm
-function updateScore() {
-  document.getElementById('score').textContent = `Score: ${score}`;
+function resumeTimer() {
+  if (timerPaused) {
+    startTimer();
+    timerPaused = false;
+  }
 }
 
-// Start timer voor timed en marathon modes
 function startTimer() {
+  var remainingSeconds = timeLimit - Math.floor((Date.now() - startTime) / 1000);
   timerInterval = setInterval(function () {
     var elapsedSeconds = Math.floor((Date.now() - startTime) / 1000);
-    var remainingSeconds = timeLimit - elapsedSeconds;
+    remainingSeconds = timeLimit - elapsedSeconds;
     if (remainingSeconds <= 0) {
       endGame();
     }
@@ -370,6 +449,9 @@ function endGame() {
 
   // Toon het rapportage scherm
   nextScreen('gameScreen', 'reportScreen');
+  setTimeout(function() {
+    document.getElementById('reportScreen').scrollIntoView({ behavior: 'smooth' });
+  }, 100); // Delay to ensure the screen transition is complete
 }
 
 // Herstart spel
@@ -382,6 +464,7 @@ function restartGame() {
   timeLimit = 0;
   exerciseType = '';
   difficultyLevel = '';
+  numberRange = '';
   score = 0;
   currentQuestionIndex = 0;
   questions = [];
@@ -392,19 +475,24 @@ function restartGame() {
   // Reset input velden en schermen
   document.getElementById('numberOfQuestions').value = '10';
   document.getElementById('gameMode').selectedIndex = 0;
+  document.getElementById('exerciseType').selectedIndex = 0;
+  document.getElementById('difficultyLevel').selectedIndex = 0;
+  document.getElementById('endOnFault').checked = false;
+  if (document.getElementById('numberRange')) {
+    document.getElementById('numberRange').selectedIndex = 0;
+  }
   toggleTimeLimit(); // Ensure the time limit input field is hidden initially
+  toggleExerciseSettings(); // Ensure the correct exercise settings are shown
 
-  // Verberg rapportage en toon tafel selectiescherm
-  nextScreen('reportScreen', 'selectTablesScreen');
+  // Verberg rapportage en toon instellingen scherm
+  nextScreen('reportScreen', 'settingsScreen');
 }
 
 // Voeg toetsenbordnavigatie toe voor een betere toegankelijkheid
 document.addEventListener('keydown', function(event) {
   if (event.key === 'Enter') {
     if (document.getElementById('welcomeScreen').classList.contains('active')) {
-      nextScreen('welcomeScreen', 'selectTablesScreen');
-    } else if (document.getElementById('selectTablesScreen').classList.contains('active')) {
-      nextScreen('selectTablesScreen', 'settingsScreen');
+      nextScreen('welcomeScreen', 'settingsScreen');
     } else if (document.getElementById('settingsScreen').classList.contains('active')) {
       startGame();
     }
