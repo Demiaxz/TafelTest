@@ -30,14 +30,17 @@ body {
 }
 
 .screen {
-  opacity: 0;
-  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 
 .screen.active {
   opacity: 1;
   visibility: visible;
-  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.screen.hidden {
+  opacity: 0;
+  visibility: hidden;
 }
 
 h1 {
@@ -68,6 +71,7 @@ p {
   border-radius: 4px;
   width: 100%;
   box-sizing: border-box;
+  transition: border-color 0.3s ease;
 }
 
 .input-field:focus {
@@ -95,10 +99,12 @@ p {
   border-radius: 4px;
   width: 100%;
   box-sizing: border-box;
+  transition: background-color 0.3s ease, transform 0.2s;
 }
 
 .btn:hover {
   background-color: #303f9f;
+  transform: translateY(-2px);
 }
 
 #score, #timer {
@@ -165,4 +171,35 @@ p {
 #previousResults th {
   background-color: #f2f2f2;
   text-align: left;
+}
+
+.correct {
+  background-color: #dff0d8;
+  animation: fadeIn 0.5s;
+}
+
+.incorrect {
+  background-color: #f2dede;
+  animation: shake 0.5s;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+#settingsScreen {
+  padding: 20px;
+  overflow-y: auto;
+  max-height: 90vh;
+}
+
+.container {
+  overflow: hidden;
 }
