@@ -13,26 +13,7 @@
     <h1>Welcome to the Math Practice Game</h1>
     <p>Please enter your name:</p>
     <input type="text" id="usernameInput" class="input-field">
-    <button class="btn" onclick="nextScreen('welcomeScreen', 'selectTablesScreen')">Start</button>
-  </div>
-
-  <!-- Selectie van tafels scherm -->
-  <div id="selectTablesScreen" class="container screen hidden">
-    <h1>Select Tables to Practice</h1>
-    <p>Select one or more tables:</p>
-    <div class="checkbox-group">
-      <label><input type="checkbox" value="1"> Tafel van 1</label>
-      <label><input type="checkbox" value="2"> Tafel van 2</label>
-      <label><input type="checkbox" value="3"> Tafel van 3</label>
-      <label><input type="checkbox" value="4"> Tafel van 4</label>
-      <label><input type="checkbox" value="5"> Tafel van 5</label>
-      <label><input type="checkbox" value="6"> Tafel van 6</label>
-      <label><input type="checkbox" value="7"> Tafel van 7</label>
-      <label><input type="checkbox" value="8"> Tafel van 8</label>
-      <label><input type="checkbox" value="9"> Tafel van 9</label>
-      <label><input type="checkbox" value="10"> Tafel van 10</label>
-    </div>
-    <button class="btn" onclick="nextScreen('selectTablesScreen', 'settingsScreen')">Next</button>
+    <button class="btn" onclick="nextScreen('welcomeScreen', 'settingsScreen')">Start</button>
   </div>
 
   <!-- Instellingen scherm -->
@@ -42,27 +23,54 @@
     <label>Number of Questions: <input type="number" id="numberOfQuestions" value="10" class="input-field"></label><br>
     <label>Game Mode:
       <select id="gameMode" class="input-field" onchange="toggleTimeLimit()">
-        <option value="timed">Timed</option>
-        <option value="endless">Endless</option>
-        <option value="marathon">Marathon</option>
-        <option value="sprint">Sprint</option>
+        <option value="timed">Set a time limit.</option>
+        <option value="endless">No time limit.</option>
       </select>
     </label><br>
-    <label id="timeLimitLabel" class="hidden">Time Limit (minutes): <input type="number" id="timeLimit" value="5" class="input-field"></label><br>
+    <label id="timeLimitLabel" class="">Time Limit (minutes): <input type="number" id="timeLimit" value="5" class="input-field"></label><br>
     <label>Exercise Type:
-      <select id="exerciseType" class="input-field">
+      <select id="exerciseType" class="input-field" onchange="toggleExerciseSettings()">
         <option value="multiplication">Multiplication</option>
         <option value="addition">Addition</option>
         <option value="subtraction">Subtraction</option>
         <option value="division">Division</option>
+        <option value="tables">Tables</option>
       </select>
     </label><br>
-    <label>Difficulty Level:
+    <label id="difficultyLevelLabel">Difficulty Level:
       <select id="difficultyLevel" class="input-field">
         <option value="easy">Easy</option>
         <option value="medium">Medium</option>
         <option value="hard">Hard</option>
+        <option value="progressive">Progressive</option>
       </select>
+    </label><br>
+    <div id="tableSelection" class="hidden">
+      <p>Select one or more tables:</p>
+      <div class="checkbox-group">
+        <label><input type="checkbox" value="1"> Tafel van 1</label>
+        <label><input type="checkbox" value="2"> Tafel van 2</label>
+        <label><input type="checkbox" value="3"> Tafel van 3</label>
+        <label><input type="checkbox" value="4"> Tafel van 4</label>
+        <label><input type="checkbox" value="5"> Tafel van 5</label>
+        <label><input type="checkbox" value="6"> Tafel van 6</label>
+        <label><input type="checkbox" value="7"> Tafel van 7</label>
+        <label><input type="checkbox" value="8"> Tafel van 8</label>
+        <label><input type="checkbox" value="9"> Tafel van 9</label>
+        <label><input type="checkbox" value="10"> Tafel van 10</label>
+      </div>
+    </div>
+    <div id="decimalRangeSelection" class="hidden">
+      <label>Range of Numbers:
+        <select id="numberRange" class="input-field">
+          <option value="1-10">1-10</option>
+          <option value="1-100">1-100</option>
+          <option value="1-1000">1-1000</option>
+        </select>
+      </label><br>
+    </div>
+    <label>End on Fault:
+      <input type="checkbox" id="endOnFault" class="input-field">
     </label><br>
     <button class="btn" onclick="startGame()">Start Game</button>
   </div>
